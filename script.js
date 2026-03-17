@@ -44,6 +44,34 @@ createGrid();
 updateHud();
 setMessage("Press Start to begin. Try to collect 20 cans in 30 seconds.");
 
+function burstConfetti() {
+  const layer = document.createElement("div");
+  layer.className = "confetti-layer";
+
+  const colors = ["#FFC907", "#2E9DF7", "#8BD1CB", "#FF902A"];
+  const pieces = 45;
+
+  for (let i = 0; i < pieces; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti";
+
+    piece.style.left = Math.random() * 100 + "vw";
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = (Math.random() * 0.25) + "s";
+
+    const w = 6 + Math.random() * 8;
+    const h = 8 + Math.random() * 10;
+    piece.style.width = w + "px";
+    piece.style.height = h + "px";
+
+    layer.appendChild(piece);
+  }
+
+  document.body.appendChild(layer);
+
+  setTimeout(() => layer.remove(), 1600);
+}
+
 // Utility
 function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];

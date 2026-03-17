@@ -101,34 +101,52 @@ function spawnWaterCan() {
   if (!gameActive) return;
 
   const cells = document.querySelectorAll(".grid-cell");
-  // clear all cells before spawning a new one
-  cells.forEach((cell) => (cell.innerHTML = ""));
+
+  // Clear all cells before spawning new item
+  cells.forEach(cell => (cell.innerHTML = ""));
 
   const randomCell = cells[Math.floor(Math.random() * cells.length)];
 
   const wrapper = document.createElement("div");
   wrapper.className = "water-can-wrapper";
 
-  const can = document.createElement("div");
-  can.className = "water-can";
-  can.setAttribute("role", "button");
-  can.setAttribute("aria-label", "Collect water can");
+  const spawnObstacle = Math.random() < OBSTACLE_CHANCE;
 
-  can.addEventListener("click", () => {
-    if (!gameActive) return;
+  if (spawnObstacle) {
+    const pollution = document.createElement("div");
+    pollution.className = "pollution";
+    pollution.textContent = "☣"; // simple obstacle icon
 
-    score += 1;
-    updateHud();
+    pollution.addEventListener("click", () => {
+      if (!gameActive) return;
 
-    // Remove the can immediately so it can’t be clicked twice
-    randomCell.innerHTML = "";
+      currentCans = Math.max(0, currentCans - OBSTACLE_PENALTY);
+      document.getElementById("current-cans").textContent = currentCans;
 
-    // Optional tiny feedback (not required, but helps)
-    if (score === 10) setMessage("Halfway there — keep going!");
-    if (score === 15) setMessage("Almost at 20!");
-  });
+      wrapper.classList.add("shake");
+      setTimeout(() => wrapper.classList.remove("shake"), 250);
 
-  wrapper.appendChild(can);
+      const msgBox = document.getElementById("achievements");
+      msgBox.textContent = `Pollution! -${OBSTACLE_PENALTY} points.`;
+      randomCell.innerHTML = "";
+    });
+
+    wrapper.appendChild(pollution);
+  } else {
+    const can = document.createElement("div");
+    can.className = "water-can";
+
+    can.addEventListener("click", () => {
+      if (!gameActive) return;
+
+      currentCans += 1;
+      document.getElementById("current-cans").textContent = currentCans;
+      randomCell.innerHTML = "";
+    });
+
+    wrapper.appendChild(can);
+  }
+
   randomCell.appendChild(wrapper);
 }
 

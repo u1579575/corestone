@@ -201,6 +201,8 @@ function endGame() {
   clearBoard();
 
   const didWin = score >= WIN_SCORE;
+  if (didWin) burstConfetti();
+  
   const endMsg = didWin ? randomFrom(WIN_MESSAGES) : randomFrom(LOSE_MESSAGES);
 
   setMessage(endMsg, didWin ? "win" : "lose");

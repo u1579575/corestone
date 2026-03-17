@@ -130,14 +130,28 @@ h1 img {
 
 
 button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+  background-color: #FFC907; /* charity: water yellow */
+  color: #111;
+  border: 2px solid #111;
   padding: 12px 24px;
   font-size: 16px;
-  border-radius: 8px;
+  font-weight: 700;
+  border-radius: 10px;
   cursor: pointer;
   display: block;
   margin: 30px auto 0;
-  transition: background-color 0.2s;
+  transition: transform 0.05s ease, opacity 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.95;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

@@ -155,3 +155,77 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* --- Branding header --- */
+.brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cw-logo {
+  width: min(320px, 90%);
+  height: auto;
+}
+
+/* --- Make stats a bit more on-brand --- */
+.stats {
+  border: 2px solid #2E9DF7; /* charity: water blue */
+}
+
+.stats span {
+  color: #2E9DF7;
+}
+
+/* --- Feedback / end message area --- */
+.achievement {
+  min-height: 44px;
+  margin: 16px auto 0;
+  max-width: 500px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f7fbff;
+  border: 2px solid #2E9DF7;
+  color: #111;
+  text-align: center;
+  font-weight: 600;
+}
+
+.achievement.win {
+  border-color: #159A48;
+  background: #f2fff6;
+}
+
+.achievement.lose {
+  border-color: #F5402C;
+  background: #fff4f4;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
+  .container {
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .game-grid {
+    gap: 10px;
+  }
+
+  .water-can-wrapper {
+    width: 62px;
+    height: 62px;
+  }
+}

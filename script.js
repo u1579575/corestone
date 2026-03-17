@@ -1,6 +1,9 @@
 const GAME_SECONDS = 30;
 const WIN_SCORE = 20;
 
+const OBSTACLE_CHANCE = 0.25; // 25% of spawns are obstacles
+const OBSTACLE_PENALTY = 2;   // subtract 2 points
+
 const WIN_MESSAGES = [
   "You did it! Clean water delivered. 🎉",
   "Nice work — you hit the goal! 💧",

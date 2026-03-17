@@ -101,8 +101,6 @@ function spawnWaterCan() {
   if (!gameActive) return;
 
   const cells = document.querySelectorAll(".grid-cell");
-
-  // Clear all cells before spawning new item
   cells.forEach(cell => (cell.innerHTML = ""));
 
   const randomCell = cells[Math.floor(Math.random() * cells.length)];
@@ -115,19 +113,18 @@ function spawnWaterCan() {
   if (spawnObstacle) {
     const pollution = document.createElement("div");
     pollution.className = "pollution";
-    pollution.textContent = "☣"; // simple obstacle icon
+    pollution.textContent = "☣";
 
     pollution.addEventListener("click", () => {
       if (!gameActive) return;
 
-      currentCans = Math.max(0, currentCans - OBSTACLE_PENALTY);
-      document.getElementById("current-cans").textContent = currentCans;
+      score = Math.max(0, score - OBSTACLE_PENALTY);
+      updateHud();
 
       wrapper.classList.add("shake");
       setTimeout(() => wrapper.classList.remove("shake"), 250);
 
-      const msgBox = document.getElementById("achievements");
-      msgBox.textContent = `Pollution! -${OBSTACLE_PENALTY} points.`;
+      setMessage(`Pollution! -${OBSTACLE_PENALTY} points.`, "lose");
       randomCell.innerHTML = "";
     });
 
@@ -139,8 +136,8 @@ function spawnWaterCan() {
     can.addEventListener("click", () => {
       if (!gameActive) return;
 
-      currentCans += 1;
-      document.getElementById("current-cans").textContent = currentCans;
+      score += 1;
+      updateHud();
       randomCell.innerHTML = "";
     });
 

@@ -4,11 +4,20 @@ const WIN_SCORE = 20;
 const OBSTACLE_CHANCE = 0.25; // 25% of spawns are obstacles
 const OBSTACLE_PENALTY = 2;   // subtract 2 points
 
+// Difficulty presets (affect time, pace, win score, obstacle chance)
+const DIFFICULTY_CONFIGS = {
+  easy:   { label: "Easy",   time: 35, winScore: 15, spawnMs: 1100, obstacleChance: 0.15 },
+  normal: { label: "Normal", time: 30, winScore: 20, spawnMs: 1000, obstacleChance: 0.25 },
+  hard:   { label: "Hard",   time: 25, winScore: 25, spawnMs: 850,  obstacleChance: 0.35 }
+};
+
+let activeDifficultyKey = "easy";
+
 const WIN_MESSAGES = [
-  "You did it! Clean water delivered. 🎉",
-  "Nice work — you hit the goal! 💧",
-  "Big win. You’re on a roll! 🚰",
-  "20+ cans collected — mission complete! ✅"
+  "You did it! Clean water delivered.",
+  "Nice work — you hit the goal!",
+  "Big win. You’re on a roll!",
+  "20+ cans collected — mission complete!"
 ];
 
 const LOSE_MESSAGES = [
@@ -17,6 +26,16 @@ const LOSE_MESSAGES = [
   "Good start. Try again and aim for 20!",
   "Not quite — retry and beat your score!"
 ];
+
+// Milestones (arrays + conditionals)
+const MILESTONES = [
+  { score: 5,  messages: ["Nice start!", "5 collected — keep going!", "Good momentum!"] },
+  { score: 10, messages: ["10! Halfway there.", "Halfway — don’t stop now!", "You’re cruising."] },
+  { score: 15, messages: ["15! Almost there!", "So close — push for the goal!", "Final stretch!"] },
+  { score: 20, messages: ["20! You hit the target score!", "Goal reached — finish strong!", "Great work!"] }
+];
+
+let shownMilestones = new Set();
 
 let score = 0;
 let timeLeft = GAME_SECONDS;
@@ -46,6 +65,15 @@ function createGrid() {
 createGrid();
 updateHud();
 setMessage("Press Start to begin. Try to collect 20 cans in 30 seconds.");
+
+document.querySelectorAll('input[name="difficulty"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    if (gameActive) return;
+    applyDifficulty(getSelectedDifficultyKey());
+  });
+});
+
+applyDifficulty(getSelectedDifficultyKey());
 
 function burstConfetti() {
   const layer = document.createElement("div");
@@ -90,6 +118,31 @@ function setMessage(text, type = "") {
   messageEl.className = "achievement" + (type ? ` ${type}` : "");
 }
 
+function getSelectedDifficultyKey() {
+  const selected = document.querySelector('input[name="difficulty"]:checked');
+  return selected ? selected.value : "easy";
+}
+
+function applyDifficulty(key) {
+  activeDifficultyKey = key;
+  const cfg = DIFFICULTY_CONFIGS[key];
+
+  // Update time display before game starts
+  timeLeft = cfg.time;
+  updateHud();
+
+  setMessage(`Selected: ${cfg.label}. Goal: ${cfg.winScore} cans in ${cfg.time}s.`, "");
+}
+
+function checkMilestones() {
+  for (const m of MILESTONES) {
+    if (score >= m.score && !shownMilestones.has(m.score)) {
+      shownMilestones.add(m.score);
+      setMessage(randomFrom(m.messages), "");
+    }
+  }
+}
+
 function clearBoard() {
   document.querySelectorAll(".grid-cell").forEach((cell) => {
     cell.innerHTML = "";
@@ -108,7 +161,7 @@ function spawnWaterCan() {
   const wrapper = document.createElement("div");
   wrapper.className = "water-can-wrapper";
 
-  const spawnObstacle = Math.random() < OBSTACLE_CHANCE;
+  const spawnObstacle = Math.random() < DIFFICULTY_CONFIGS[activeDifficultyKey].obstacleChance;
 
   if (spawnObstacle) {
     const pollution = document.createElement("div");
@@ -117,7 +170,7 @@ function spawnWaterCan() {
 
     pollution.addEventListener("click", () => {
       if (!gameActive) return;
-
+      
       score = Math.max(0, score - OBSTACLE_PENALTY);
       updateHud();
 
@@ -138,6 +191,7 @@ function spawnWaterCan() {
 
       score += 1;
       updateHud();
+      checkMilestones();
       randomCell.innerHTML = "";
     });
 
@@ -170,7 +224,10 @@ function startGame() {
 
   // reset state
   score = 0;
-  timeLeft = GAME_SECONDS;
+  const cfg = DIFFICULTY_CONFIGS[getSelectedDifficultyKey()];
+activeDifficultyKey = getSelectedDifficultyKey();
+timeLeft = cfg.time;
+shownMilestones = new Set();
   gameActive = true;
 
   // UI reset
@@ -183,9 +240,12 @@ function startGame() {
   createGrid();
   clearBoard();
   spawnWaterCan();
-
+  
+//difficulty won't be changed
+document.querySelectorAll('input[name="difficulty"]').forEach(r => r.disabled = true);
+  
   clearInterval(spawnIntervalId);
-  spawnIntervalId = setInterval(spawnWaterCan, 1000);
+  spawnIntervalId = setInterval(spawnWaterCan, cfg.spawnMs);
 
   startTimer();
 }
@@ -197,7 +257,8 @@ function endGame() {
   clearInterval(timerIntervalId);
   clearBoard();
 
-  const didWin = score >= WIN_SCORE;
+  const cfg = DIFFICULTY_CONFIGS[activeDifficultyKey];
+const didWin = score >= cfg.winScore;
   if (didWin) burstConfetti();
   
   const endMsg = didWin ? randomFrom(WIN_MESSAGES) : randomFrom(LOSE_MESSAGES);
@@ -206,6 +267,9 @@ function endGame() {
 
   startBtn.disabled = false;
   startBtn.textContent = "Play Again";
+
+  document.querySelectorAll('input[name="difficulty"]').forEach(r => r.disabled = false);
+  
 }
 
 // Start button handler

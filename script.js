@@ -50,6 +50,8 @@ const timerEl = document.getElementById("timer");
 const messageEl = document.getElementById("achievements");
 const startBtn = document.getElementById("start-game");
 
+const instructionsEl = document.querySelector(".game-instructions");
+
 // Creates the 3x3 game grid where items will appear
 function createGrid() {
   const grid = document.querySelector(".game-grid");
@@ -225,6 +227,7 @@ function startGame() {
   // reset state
   score = 0;
   const cfg = DIFFICULTY_CONFIGS[getSelectedDifficultyKey()];
+  instructionsEl.textContent = `Collect ${cfg.winScore} cans in ${cfg.time}s to win!`;
 activeDifficultyKey = getSelectedDifficultyKey();
 timeLeft = cfg.time;
 shownMilestones = new Set();

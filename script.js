@@ -11,6 +11,9 @@ const DIFFICULTY_CONFIGS = {
   hard:   { label: "Hard",   time: 25, winScore: 25, spawnMs: 850,  obstacleChance: 0.35 }
 };
 
+let timerId;
+let gameOver = false;
+
 let activeDifficultyKey = "easy";
 
 const WIN_MESSAGES = [
@@ -153,6 +156,7 @@ function clearBoard() {
 
 // Spawns a new can in a random grid cell
 function spawnWaterCan() {
+  if (gameOver) return;
   if (!gameActive) return;
 
   const cells = document.querySelectorAll(".grid-cell");
@@ -222,6 +226,9 @@ function startTimer() {
 
 // Initializes and starts a new game
 function startGame() {
+  clearInterval(timerId);
+gameOver = false;
+  
   if (gameActive) return;
 
   // reset state
@@ -254,6 +261,9 @@ document.querySelectorAll('input[name="difficulty"]').forEach(r => r.disabled = 
 }
 
 function endGame() {
+  gameOver = true;
+clearInterval(timerId);
+  
   gameActive = false;
 
   clearInterval(spawnIntervalId);
